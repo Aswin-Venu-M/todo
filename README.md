@@ -1,4 +1,4 @@
-# KanbanFlow — Multi-User Kanban Todo Application
+# Todo — Multi-User Kanban Todo Application
 
 A production-grade, multi-user Kanban Todo application built with **Next.js App Router**, **TypeScript**, **Tailwind CSS**, **ShadCN UI principles**, **PostgreSQL**, and **Sequelize ORM**, styled with a custom modern design system.
 
