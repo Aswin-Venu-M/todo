@@ -202,9 +202,9 @@ export function KanbanBoard({
               <button
                 type="button"
                 onClick={() => setIsShareModalOpen(true)}
-                className="orb-btn orb-btn-sm orb-btn-outline hidden sm:inline-flex"
+                className="orb-btn orb-btn-outline hidden sm:inline-flex"
               >
-                <UserPlus2 className="size-3.5 text-[var(--orb-accent)]" />
+                <UserPlus2 className="size-4 text-[var(--orb-accent)]" />
                 <span>Share Board</span>
               </button>
             )}
@@ -215,9 +215,9 @@ export function KanbanBoard({
                 setCreateModalDefaultStatus("TODO");
                 setIsCreateModalOpen(true);
               }}
-              className="orb-btn orb-btn-sm orb-btn-brand"
+              className="orb-btn orb-btn-brand"
             >
-              <Plus className="size-3.5" />
+              <Plus className="size-4" />
               <span>New Task</span>
             </button>
           </div>

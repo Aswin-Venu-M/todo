@@ -14,6 +14,8 @@
    1. DESIGN TOKENS & CSS VARIABLES
    ========================================================================== */
 :root {
+  --desktop-nav-width: 240px;
+
   /* Brand Palette - Emerald Green Modern Theme */
   --orb-primary: #064E3B; /* Deep emerald forest */
   --orb-dark: #022C22;    /* Ultra deep pine */

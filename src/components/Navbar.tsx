@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   Columns3,
@@ -11,61 +11,11 @@ import {
   X,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import type { UserSafe } from "@/lib/types";
 
 interface NavbarProps {
   currentUser: UserSafe | null;
   onOpenNewTodo?: () => void;
-}
-
-function NavItem({
-  icon: Icon,
-  label,
-  active,
-  onClick,
-  danger,
-}: {
-  icon: React.ElementType;
-  label: string;
-  active?: boolean;
-  onClick: () => void;
-  danger?: boolean;
-}) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          type="button"
-          onClick={onClick}
-          className={`
-            relative flex items-center justify-center w-10 h-10 rounded-xl
-            transition-all duration-150 cursor-pointer border-0 outline-none
-            ${
-              danger
-                ? "text-[var(--orb-text-muted)] hover:bg-red-50 hover:text-[var(--orb-destructive)]"
-                : active
-                ? "bg-[var(--orb-accent)] text-white shadow-sm shadow-emerald-200"
-                : "text-[var(--orb-text-muted)] hover:bg-[var(--orb-bg-muted)] hover:text-[var(--orb-text-primary)]"
-            }
-          `}
-          aria-label={label}
-        >
-          <Icon className="size-[18px]" />
-          {active && !danger && (
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-0.5 w-0.5 h-5 bg-[var(--orb-accent)] rounded-full" />
-          )}
-        </button>
-      </TooltipTrigger>
-      <TooltipContent side="right" className="text-xs font-semibold">
-        {label}
-      </TooltipContent>
-    </Tooltip>
-  );
 }
 
 export function Navbar({ currentUser }: NavbarProps) {
@@ -84,7 +34,10 @@ export function Navbar({ currentUser }: NavbarProps) {
     if (!isMenuOpen) return;
 
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeMenu();
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
     };
 
     document.addEventListener("keydown", closeOnEscape);
@@ -126,7 +79,7 @@ export function Navbar({ currentUser }: NavbarProps) {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between border-b border-[var(--orb-border)] bg-[var(--orb-bg-surface)] px-4 shadow-sm md:hidden">
+      <header className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between border-b border-[var(--orb-border)] bg-[var(--orb-bg-surface)] px-4 shadow-sm lg:hidden">
         <button
           type="button"
           onClick={() => setIsMenuOpen(true)}
@@ -153,7 +106,7 @@ export function Navbar({ currentUser }: NavbarProps) {
       </header>
 
       <div
-        className={`fixed inset-0 z-[60] md:hidden ${
+        className={`fixed inset-0 z-[60] lg:hidden ${
           isMenuOpen ? "" : "pointer-events-none"
         }`}
         inert={!isMenuOpen}
@@ -256,75 +209,86 @@ export function Navbar({ currentUser }: NavbarProps) {
       </div>
 
       <aside
-        className="
-          fixed left-0 top-0 z-50 hidden h-screen w-[64px]
-          flex-col items-center justify-between border-r border-[var(--orb-border)]
-          bg-[var(--orb-bg-surface)] py-4 md:flex
-        "
+        style={{ width: "240px" }}
+        className="fixed left-0 top-0 z-50 hidden h-screen flex-col items-center justify-between border-r border-[var(--orb-border)] bg-[var(--orb-bg-surface)] py-3 shadow-sm lg:flex"
         aria-label="Main Navigation"
       >
-        <div className="flex w-full flex-col items-center gap-5 px-3">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                type="button"
-                onClick={() => router.push("/board")}
-                className="flex size-10 items-center justify-center rounded-xl border-0 bg-[var(--orb-primary)] text-white transition-opacity hover:opacity-90"
-                aria-label="Todo — go to board"
-              >
-                <SquareCheck className="size-5 text-[var(--orb-accent)]" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="text-xs font-bold">
-              Todo
-            </TooltipContent>
-          </Tooltip>
+        <div className="flex w-full flex-col items-center gap-6 px-5">
+          <button
+            type="button"
+            onClick={() => router.push("/board")}
+            className="flex h-[50px] w-full shrink-0 items-center justify-start gap-3 overflow-hidden rounded-xl border-0 bg-transparent text-[var(--orb-text-primary)] transition-colors hover:bg-[var(--orb-bg-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--orb-accent)]"
+            aria-label="Todo — go to board"
+          >
+            <span className="flex size-[50px] shrink-0 items-center justify-center rounded-xl bg-[var(--orb-primary)]">
+              <SquareCheck className="size-5 text-[var(--orb-accent)]" />
+            </span>
+            <span className="text-sm font-bold">Todo</span>
+          </button>
 
-          <div className="h-px w-8 bg-[var(--orb-border)]" />
+          <div className="h-px w-full shrink-0 bg-[var(--orb-border)]" />
 
-          <nav className="flex w-full flex-col items-center gap-1.5">
-            <NavItem
-              icon={Columns3}
-              label="My Board"
-              active={isMyBoard}
+          <nav className="flex w-full flex-col gap-1.5">
+            <button
+              type="button"
               onClick={() => router.push("/board")}
-            />
-            <NavItem
-              icon={Users2}
-              label="Shared Boards"
-              active={isSharedBoards}
+              aria-current={isMyBoard ? "page" : undefined}
+              className={`flex h-11 w-full shrink-0 items-center justify-start gap-3 overflow-hidden rounded-xl px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--orb-accent)] ${
+                isMyBoard
+                  ? "bg-[var(--orb-accent-subtle)] text-[var(--orb-accent)]"
+                  : "text-[var(--orb-text-muted)] hover:bg-[var(--orb-bg-muted)] hover:text-[var(--orb-text-primary)]"
+              }`}
+            >
+              <Columns3 className="size-[18px] shrink-0" />
+              <span>My Board</span>
+            </button>
+            <button
+              type="button"
               onClick={() => router.push("/shared")}
-            />
+              aria-current={isSharedBoards ? "page" : undefined}
+              className={`flex h-11 w-full shrink-0 items-center justify-start gap-3 overflow-hidden rounded-xl px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--orb-accent)] ${
+                isSharedBoards
+                  ? "bg-[var(--orb-accent-subtle)] text-[var(--orb-accent)]"
+                  : "text-[var(--orb-text-muted)] hover:bg-[var(--orb-bg-muted)] hover:text-[var(--orb-text-primary)]"
+              }`}
+            >
+              <Users2 className="size-[18px] shrink-0" />
+              <span>Shared Boards</span>
+            </button>
           </nav>
         </div>
 
-        <div className="flex w-full flex-col items-center gap-2 px-3">
+        <div className="flex w-full flex-col items-center gap-2 px-5">
           {currentUser && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="cursor-default">
-                  <Avatar className="size-9 border-2 border-[var(--orb-border)] transition-colors hover:border-[var(--orb-accent)]">
-                    <AvatarFallback className="bg-[var(--orb-primary)] text-xs font-bold text-white">
-                      {getInitials(currentUser.name || "User")}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="text-xs">
-                <p className="font-semibold">{currentUser.name}</p>
-                <p className="font-mono text-[10px] text-[var(--orb-text-muted)]">
+            <div className="flex h-11 w-full shrink-0 items-center justify-start gap-3 overflow-hidden rounded-xl px-2">
+              <Avatar className="size-10 shrink-0 border-2 border-[var(--orb-border)]">
+                <AvatarFallback className="bg-[var(--orb-primary)] text-xs font-bold text-white">
+                  {getInitials(currentUser.name || "User")}
+                </AvatarFallback>
+              </Avatar>
+              <span className="min-w-0 flex-1 overflow-hidden whitespace-nowrap">
+                <span className="block truncate text-xs font-semibold text-[var(--orb-text-primary)]">
+                  {currentUser.name}
+                </span>
+                <span className="block truncate text-[10px] text-[var(--orb-text-muted)]">
                   {currentUser.email}
-                </p>
-              </TooltipContent>
-            </Tooltip>
+                </span>
+              </span>
+            </div>
           )}
 
-          <NavItem
-            icon={LogOut}
-            label={isLoggingOut ? "Signing out…" : "Sign Out"}
+          <button
+            type="button"
             onClick={handleLogout}
-            danger
-          />
+            disabled={isLoggingOut}
+            aria-label={isLoggingOut ? "Signing out…" : "Sign Out"}
+            className="flex h-11 w-full shrink-0 items-center justify-start gap-3 overflow-hidden rounded-xl px-3 text-[var(--orb-text-muted)] transition-colors hover:bg-red-50 hover:text-[var(--orb-destructive)] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--orb-accent)]"
+          >
+            <LogOut className="size-[18px] shrink-0" />
+            <span className="text-sm font-semibold">
+              {isLoggingOut ? "Signing out…" : "Sign Out"}
+            </span>
+          </button>
         </div>
       </aside>
     </>

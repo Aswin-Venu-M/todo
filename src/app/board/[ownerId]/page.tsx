@@ -32,7 +32,7 @@ export default async function SharedBoardPage({ params }: SharedBoardPageProps) 
   const boardOwner = await User.findByPk(ownerId);
   if (!boardOwner) {
     return (
-      <div className="min-h-screen bg-[var(--orb-bg-app)] flex flex-col pt-14 md:pl-[64px] md:pt-0 md:pb-8">
+      <div className="min-h-screen bg-[var(--orb-bg-app)] flex flex-col pt-14 md:pb-8 lg:pl-[var(--desktop-nav-width)] lg:pt-0">
         <Navbar currentUser={currentUser.toSafeJSON()} />
         <div className="flex flex-1 items-center justify-center p-6">
           <div className="orb-card max-w-sm w-full text-center">
@@ -65,7 +65,7 @@ export default async function SharedBoardPage({ params }: SharedBoardPageProps) 
   // 403 Forbidden Screen
   if (!accessGrant) {
     return (
-      <div className="min-h-screen bg-[var(--orb-bg-app)] flex flex-col pt-14 md:pl-[64px] md:pt-0 md:pb-8">
+      <div className="min-h-screen bg-[var(--orb-bg-app)] flex flex-col pt-14 md:pb-8 lg:pl-[var(--desktop-nav-width)] lg:pt-0">
         <Navbar currentUser={currentUser.toSafeJSON()} />
         <main className="flex flex-1 items-center justify-center p-6">
           <div className="orb-card max-w-md w-full text-center">
@@ -83,7 +83,7 @@ export default async function SharedBoardPage({ params }: SharedBoardPageProps) 
 
             <p className="mt-2 text-xs text-[var(--orb-text-secondary)] leading-relaxed">
               You do not have permission to view{" "}
-              <strong className="text-[var(--orb-text-primary)]">{boardOwner.name}'s</strong> board (
+              <strong className="text-[var(--orb-text-primary)]">{boardOwner.name}&apos;s</strong> board (
               {boardOwner.email}). Access must be explicitly granted by the owner.
             </p>
 
@@ -122,7 +122,7 @@ export default async function SharedBoardPage({ params }: SharedBoardPageProps) 
   const safeCurrentUser = currentUser.toSafeJSON();
 
   return (
-    <div className="min-h-screen bg-[var(--orb-bg-app)] pt-14 md:pl-[64px] md:pt-0 md:pb-8">
+    <div className="min-h-screen bg-[var(--orb-bg-app)] pt-14 md:pb-8 lg:pl-[var(--desktop-nav-width)] lg:pt-0">
       <Navbar currentUser={safeCurrentUser} />
 
       <main className="mx-auto max-w-7xl px-3 sm:px-6 pt-5">
@@ -130,7 +130,7 @@ export default async function SharedBoardPage({ params }: SharedBoardPageProps) 
           <div className="flex flex-col gap-0.5">
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--orb-text-primary)]">
-                {safeOwner.name}'s Board
+                {safeOwner.name}&apos;s Board
               </h1>
               <span className="orb-badge orb-badge-subtle-brand text-[11px] py-0.5 px-2.5">
                 {accessGrant.canEdit ? "EDITOR" : "READ-ONLY COLLABORATOR"}

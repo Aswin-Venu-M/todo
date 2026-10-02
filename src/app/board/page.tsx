@@ -37,7 +37,7 @@ export default async function MyBoardPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-[var(--orb-bg-app)] pt-14 text-[var(--orb-text-primary)] transition-all md:pl-[64px] md:pt-0 md:pb-8">
+    <div className="min-h-screen bg-[var(--orb-bg-app)] pt-14 text-[var(--orb-text-primary)] md:pb-8 lg:pl-[var(--desktop-nav-width)] lg:pt-0">
       <Navbar currentUser={safeUser} />
 
       <main className="mx-auto max-w-7xl px-3 sm:px-6 pt-5">
