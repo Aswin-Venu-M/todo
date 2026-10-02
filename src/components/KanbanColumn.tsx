@@ -63,12 +63,22 @@ export function KanbanColumn({
     if (!canEdit) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    if (!canEdit) return;
+    e.preventDefault();
     setIsDragOver(true);
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     if (!canEdit) return;
-    e.preventDefault();
+    if (
+      e.relatedTarget instanceof Node &&
+      e.currentTarget.contains(e.relatedTarget)
+    ) {
+      return;
+    }
     setIsDragOver(false);
   };
 
@@ -84,6 +94,7 @@ export function KanbanColumn({
 
   return (
     <section
+      onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}

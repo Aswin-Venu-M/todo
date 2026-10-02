@@ -3,12 +3,20 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sparkles, ArrowRight, ShieldCheck, Mail, Lock } from "lucide-react";
+import {
+  SquareCheck,
+  ArrowRight,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,7 +57,7 @@ export default function LoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         {/* Brand Logo */}
         <div className="mx-auto flex size-10 items-center justify-center rounded-[var(--orb-radius-field)] bg-[var(--orb-primary)] text-white shadow-sm">
-          <Sparkles className="size-5 text-[var(--orb-accent)]" />
+          <SquareCheck className="size-5 text-[var(--orb-accent)]" />
         </div>
         <h2 className="mt-3 text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--orb-text-primary)]">
           Welcome to Todo
@@ -101,14 +109,27 @@ export default function LoginPage() {
                 </div>
                 <input
                   id="login-password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete="current-password"
-                  className="orb-input"
+                  className="orb-input pr-12"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  className="absolute right-3 flex size-8 items-center justify-center rounded-md text-[var(--orb-text-muted)] transition-colors hover:bg-[var(--orb-bg-hover)] hover:text-[var(--orb-text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--orb-accent)]"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
+                >
+                  {showPassword ? (
+                    <EyeOff className="size-4" aria-hidden="true" />
+                  ) : (
+                    <Eye className="size-4" aria-hidden="true" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -125,74 +146,46 @@ export default function LoginPage() {
           {/* Quick Demo Persona Switcher */}
           <div className="mt-4 pt-3.5 border-t border-[var(--orb-border)]">
             <span className="block text-[10.5px] font-bold uppercase tracking-wider text-[var(--orb-text-muted)] mb-2">
-              Select Demo Persona (Click to autofill)
+              Select Demo User (Click to autofill)
             </span>
 
             <div className="space-y-1.5">
               <button
                 type="button"
-                onClick={() => fillDemoAccount("alice@example.com")}
-                className={`w-full flex items-center justify-between p-2 rounded-[var(--orb-radius-md)] border text-left transition-all cursor-pointer ${
-                  email === "alice@example.com"
+                onClick={() => fillDemoAccount("user1@gmail.com")}
+                className={`w-full flex items-center justify-start p-2.5 rounded-[var(--orb-radius-md)] border text-left transition-all cursor-pointer ${
+                  email === "user1@gmail.com"
                     ? "bg-[var(--orb-accent-subtle)] border-[var(--orb-accent)] text-[var(--orb-text-primary)]"
                     : "border-[var(--orb-border)] hover:bg-[var(--orb-bg-muted)] text-[var(--orb-text-secondary)]"
                 }`}
               >
                 <div>
                   <span className="font-bold text-xs text-[var(--orb-text-primary)]">
-                    Alice Walker
+                    User 1
                   </span>
                   <span className="block text-[10px] text-[var(--orb-text-muted)] font-mono">
-                    alice@example.com
+                    user1@gmail.com
                   </span>
                 </div>
-                <span className="orb-badge orb-badge-subtle-brand text-[9.5px]">
-                  OWNER (5 Tasks)
-                </span>
               </button>
 
               <button
                 type="button"
-                onClick={() => fillDemoAccount("bob@example.com")}
-                className={`w-full flex items-center justify-between p-2.5 rounded-[var(--orb-radius-md)] border text-left transition-all cursor-pointer ${
-                  email === "bob@example.com"
+                onClick={() => fillDemoAccount("user2@gmail.com")}
+                className={`w-full flex items-center justify-start p-2.5 rounded-[var(--orb-radius-md)] border text-left transition-all cursor-pointer ${
+                  email === "user2@gmail.com"
                     ? "bg-[var(--orb-accent-subtle)] border-[var(--orb-accent)] text-[var(--orb-text-primary)]"
                     : "border-[var(--orb-border)] hover:bg-[var(--orb-bg-muted)] text-[var(--orb-text-secondary)]"
                 }`}
               >
                 <div>
                   <span className="font-bold text-xs text-[var(--orb-text-primary)]">
-                    Bob Smith
+                    User 2
                   </span>
                   <span className="block text-[10px] text-[var(--orb-text-muted)] font-mono">
-                    bob@example.com
+                    user2@gmail.com
                   </span>
                 </div>
-                <span className="orb-badge orb-badge-subtle-pass text-[9.5px]">
-                  VIEWER (Access Granted)
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => fillDemoAccount("charlie@example.com")}
-                className={`w-full flex items-center justify-between p-2.5 rounded-[var(--orb-radius-md)] border text-left transition-all cursor-pointer ${
-                  email === "charlie@example.com"
-                    ? "bg-[var(--orb-accent-subtle)] border-[var(--orb-accent)] text-[var(--orb-text-primary)]"
-                    : "border-[var(--orb-border)] hover:bg-[var(--orb-bg-muted)] text-[var(--orb-text-secondary)]"
-                }`}
-              >
-                <div>
-                  <span className="font-bold text-xs text-[var(--orb-text-primary)]">
-                    Charlie Brown
-                  </span>
-                  <span className="block text-[10px] text-[var(--orb-text-muted)] font-mono">
-                    charlie@example.com
-                  </span>
-                </div>
-                <span className="orb-badge orb-badge-subtle-fail text-[9.5px]">
-                  RESTRICTED (403 Test)
-                </span>
               </button>
             </div>
           </div>
@@ -206,11 +199,6 @@ export default function LoginPage() {
               Create Account
             </Link>
           </div>
-        </div>
-
-        <div className="mt-4 flex items-center justify-center gap-1.5 text-[11px] text-[var(--orb-text-muted)] font-mono">
-          <ShieldCheck className="size-3.5 text-[var(--orb-pass)]" />
-          <span>Bcrypt Password Hash • JWT HttpOnly Session Cookie</span>
         </div>
       </div>
     </div>

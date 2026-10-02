@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sparkles, ArrowRight, User, Mail, Lock } from "lucide-react";
+import { SquareCheck, ArrowRight, User, Mail, Lock } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function RegisterPage() {
     <div className="orb-dot-grid min-h-screen flex flex-col justify-center px-4 py-8 sm:px-6">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <div className="mx-auto flex size-10 items-center justify-center rounded-[var(--orb-radius-field)] bg-[var(--orb-primary)] text-white shadow-sm">
-          <Sparkles className="size-5 text-[var(--orb-accent)]" />
+          <SquareCheck className="size-5 text-[var(--orb-accent)]" />
         </div>
         <h2 className="mt-3 text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--orb-text-primary)]">
           Create Your Account
@@ -74,7 +74,7 @@ export default function RegisterPage() {
                 <input
                   id="register-name"
                   type="text"
-                  placeholder="Alex Johnson"
+                  placeholder="Enter your full name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -96,7 +96,7 @@ export default function RegisterPage() {
                 <input
                   id="register-email"
                   type="email"
-                  placeholder="alex@example.com"
+                  placeholder="Enter your email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -118,7 +118,7 @@ export default function RegisterPage() {
                 <input
                   id="register-password"
                   type="password"
-                  placeholder="••••••••••••"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required

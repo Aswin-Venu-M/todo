@@ -3,10 +3,10 @@
 import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
-  Kanban,
+  Columns3,
   Users2,
   LogOut,
-  CheckSquare2,
+  SquareCheck,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -116,7 +116,7 @@ export function Navbar({ currentUser }: NavbarProps) {
                 className="flex items-center justify-center size-10 rounded-xl bg-[var(--orb-primary)] text-white cursor-pointer border-0 hover:opacity-90 transition-opacity"
                 aria-label="Todo — go to board"
               >
-                <CheckSquare2 className="size-5 text-[var(--orb-accent)]" />
+                <SquareCheck className="size-5 text-[var(--orb-accent)]" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="right" className="text-xs font-bold">
@@ -130,7 +130,7 @@ export function Navbar({ currentUser }: NavbarProps) {
           {/* Nav items */}
           <nav className="flex flex-col items-center gap-1.5 w-full">
             <NavItem
-              icon={Kanban}
+              icon={Columns3}
               label="My Board"
               active={isMyBoard}
               onClick={() => router.push("/board")}

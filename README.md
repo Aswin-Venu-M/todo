@@ -62,7 +62,7 @@ The application adopts custom design tokens and modern UI patterns:
 - **Task Search & Filtering**: Real-time client-side search by title/description and priority filtering.
 - **Board Sharing Management**: Dedicated modal allowing owners to grant view access to colleagues by email, review active permissions, or revoke access with one click.
 - **Read-Only Viewer Experience**: Shared boards clearly display an informative banner identifying the owner, while all mutation actions (create, edit, delete, status shift) are safely stripped and blocked with backend 403 enforcement.
-- **Evaluator-Friendly Quick Login**: One-click demo credentials on the login screen to toggle between Owner (Alice), Authorized Viewer (Bob), and Unauthorized Viewer (Charlie).
+- **Evaluator-Friendly Quick Login**: One-click demo credentials for User 1 (board owner) and User 2 (authorized viewer). An additional unauthorized account remains available to access-control tests.
 
 ---
 
@@ -191,7 +191,7 @@ Request to Access/Modify Resource
 todo_app/
 ├── scripts/
 │   ├── migrate.ts            # Schema migration (Sequelize sync)
-│   ├── seed.ts               # Demo data seeder (Alice, Bob, Charlie)
+│   ├── seed.ts               # Demo data seeder (User 1, User 2, and an unauthorized test user)
 │   ├── reset.ts              # Drop tables, recreate, and re-seed
 │   ├── test-auth-access.ts   # Automated unit-level access control tests
 │   └── test-e2e-http.ts      # Live HTTP test suite against running server
@@ -321,13 +321,14 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Demo Credentials & Quick-Fill
 
-The login page features **one-click autofill buttons** for all three test accounts:
+The login page features **one-click autofill buttons** for the two demo accounts:
 
 | User | Email | Password | Role / Purpose |
 |---|---|---|---|
-| **Alice Walker** | `alice@example.com` | `Password123!` | **Board Owner**: Owns 5 sample tasks across Todo, In Progress, and Done. Has shared her board with Bob. |
-| **Bob Smith** | `bob@example.com` | `Password123!` | **Authorized Viewer**: Owns personal tasks and has received read-only view access to Alice's board. |
-| **Charlie Brown** | `charlie@example.com` | `Password123!` | **Unauthorized User**: Has an account but has **NOT** been granted access to Alice's board (tests 403 Forbidden). |
+| **User 1** | `user1@gmail.com` | `Password123!` | **Board Owner**: Owns 5 everyday sample tasks across Todo, In Progress, and Done. Has shared their board with User 2. |
+| **User 2** | `user2@gmail.com` | `Password123!` | **Authorized Viewer**: Owns 2 everyday sample tasks and has read-only access to User 1's board. |
+
+The seed data also creates an internal unauthorized test account (`charlie@example.com`) for verifying 403 Forbidden access. It is not shown among the login-page demo users.
 
 ---
 

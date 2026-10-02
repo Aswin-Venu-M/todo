@@ -10,16 +10,16 @@ async function runTests() {
   try {
     await sequelize.authenticate();
 
-    // 1. Fetch Alice, Bob, Charlie
-    const alice = await User.findOne({ where: { email: "alice@example.com" } });
-    const bob = await User.findOne({ where: { email: "bob@example.com" } });
+    // 1. Fetch demo users and the internal unauthorized test account
+    const alice = await User.findOne({ where: { email: "user1@gmail.com" } });
+    const bob = await User.findOne({ where: { email: "user2@gmail.com" } });
     const charlie = await User.findOne({ where: { email: "charlie@example.com" } });
 
     if (!alice || !bob || !charlie) {
       throw new Error("Seed users not found. Run npm run db:seed first.");
     }
 
-    console.log("✓ Test 1: Verified seeded test users exist (Alice, Bob, Charlie).");
+    console.log("✓ Test 1: Verified seeded demo and authorization test users exist.");
 
     // 2. Verify password hashing
     const isPasswordValid = await bcrypt.compare("Password123!", alice.passwordHash);
@@ -28,14 +28,14 @@ async function runTests() {
     }
     console.log("✓ Test 2: Verified bcrypt password hash matches credentials.");
 
-    // 3. Verify Alice's todos exist
+    // 3. Verify User 1's todos exist
     const aliceTodos = await Todo.findAll({ where: { ownerId: alice.id } });
     if (aliceTodos.length === 0) {
-      throw new Error("Alice has no todos.");
+      throw new Error("User 1 has no todos.");
     }
-    console.log(`✓ Test 3: Verified Alice has ${aliceTodos.length} owned todos.`);
+    console.log(`✓ Test 3: Verified User 1 has ${aliceTodos.length} owned todos.`);
 
-    // 4. Test Board Access logic: Bob accessing Alice's board
+    // 4. Test Board Access logic: User 2 accessing User 1's board
     const bobAccessToAlice = await BoardAccess.findOne({
       where: {
         ownerId: alice.id,
@@ -45,11 +45,11 @@ async function runTests() {
     });
 
     if (!bobAccessToAlice) {
-      throw new Error("Bob does not have BoardAccess to Alice's board.");
+      throw new Error("User 2 does not have BoardAccess to User 1's board.");
     }
-    console.log("✓ Test 4: Verified BoardAccess record permits Bob to view Alice's board.");
+    console.log("✓ Test 4: Verified BoardAccess record permits User 2 to view User 1's board.");
 
-    // 5. Test Board Access logic: Charlie accessing Alice's board (should be DENIED)
+    // 5. Test Board Access logic: the unauthorized test user accessing User 1's board (should be DENIED)
     const charlieAccessToAlice = await BoardAccess.findOne({
       where: {
         ownerId: alice.id,
@@ -59,23 +59,23 @@ async function runTests() {
     });
 
     if (charlieAccessToAlice) {
-      throw new Error("Security Breach: Charlie should NOT have access to Alice's board!");
+      throw new Error("Security Breach: the unauthorized test user should NOT have access to User 1's board!");
     }
-    console.log("✓ Test 5: Verified Charlie has NO access record to Alice's board (Expected 403 Forbidden).");
+    console.log("✓ Test 5: Verified the unauthorized test user has NO access record to User 1's board (Expected 403 Forbidden).");
 
-    // 6. Test Todo Modification Authorization: Bob attempting to mutate Alice's todo
+    // 6. Test Todo Modification Authorization: User 2 attempting to mutate User 1's todo
     const aliceTodo = aliceTodos[0];
     const isBobOwner = aliceTodo.ownerId === bob.id;
     if (isBobOwner) {
-      throw new Error("Ownership logic error: Bob should not own Alice's todo.");
+      throw new Error("Ownership logic error: User 2 should not own User 1's todo.");
     }
-    console.log("✓ Test 6: Verified Bob is NOT the owner of Alice's todo; mutations correctly blocked.");
+    console.log("✓ Test 6: Verified User 2 is NOT the owner of User 1's todo; mutations correctly blocked.");
 
-    // 7. Test Todo Modification Authorization: Alice mutating her own todo
+    // 7. Test Todo Modification Authorization: User 1 mutating their own todo
     const originalStatus = aliceTodo.status;
     aliceTodo.status = originalStatus === "TODO" ? "IN_PROGRESS" : "TODO";
     await aliceTodo.save();
-    console.log(`✓ Test 7: Verified Alice can update her own todo status (now ${aliceTodo.status}).`);
+    console.log(`✓ Test 7: Verified User 1 can update their own todo status (now ${aliceTodo.status}).`);
 
     // Reset status back
     aliceTodo.status = originalStatus;

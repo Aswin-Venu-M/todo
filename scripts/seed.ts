@@ -20,23 +20,23 @@ async function seed() {
 
     const defaultPasswordHash = await bcrypt.hash("Password123!", 10);
 
-    // 1. Create User A (Alice Walker)
+    // 1. Create User 1 (board owner)
     const userA = await User.create({
-      name: "Alice Walker",
-      email: "alice@example.com",
+      name: "User 1",
+      email: "user1@gmail.com",
       passwordHash: defaultPasswordHash,
     });
     console.log(`Created User A: ${userA.name} (${userA.email}, ID: ${userA.id})`);
 
-    // 2. Create User B (Bob Smith)
+    // 2. Create User 2 (authorized viewer)
     const userB = await User.create({
-      name: "Bob Smith",
-      email: "bob@example.com",
+      name: "User 2",
+      email: "user2@gmail.com",
       passwordHash: defaultPasswordHash,
     });
     console.log(`Created User B: ${userB.name} (${userB.email}, ID: ${userB.id})`);
 
-    // 3. Create User C (Charlie Brown) - No board access to Alice's board
+    // 3. Create an unauthorized test user with no access to User 1's board
     const userC = await User.create({
       name: "Charlie Brown",
       email: "charlie@example.com",
@@ -47,61 +47,61 @@ async function seed() {
     // 4. Create sample Todos for User A
     const todosA = await Todo.bulkCreate([
       {
-        title: "Design High-Level Architecture",
-        description: "Draft Next.js App Router structure, Sequelize models, and session cookies flow.",
+        title: "Book dentist appointment",
+        description: "Call the clinic and ask for an afternoon slot.",
         status: "TODO",
         priority: "HIGH",
         ownerId: userA.id,
       },
       {
-        title: "Implement Board Access Control",
-        description: "Enforce read-only access for authorized viewers and strictly disallow unauthorized users.",
+        title: "Pick up groceries",
+        description: "Get milk, bread, eggs, and coffee.",
         status: "IN_PROGRESS",
         priority: "HIGH",
         ownerId: userA.id,
       },
       {
-        title: "Build Responsive Kanban Board",
-        description: "Implement 3 columns (Todo, In Progress, Done) with priority indicators and status quick-actions.",
+        title: "Call the electrician",
+        description: "Ask about the kitchen light and confirm a time.",
         status: "IN_PROGRESS",
         priority: "MEDIUM",
         ownerId: userA.id,
       },
       {
-        title: "Configure Neon / Postgres SSL",
-        description: "Ensure Sequelize handles SSL connections for Vercel deployment and local fallback seamlessly.",
+        title: "Return library books",
+        description: "Drop them off before the library closes.",
         status: "DONE",
         priority: "MEDIUM",
         ownerId: userA.id,
       },
       {
-        title: "Write Comprehensive Documentation",
-        description: "Cover project overview, access-control design, setup instructions, and demo credentials.",
+        title: "Pay phone bill",
+        description: "Paid through the provider's app.",
         status: "DONE",
         priority: "LOW",
         ownerId: userA.id,
       },
     ]);
-    console.log(`Created ${todosA.length} sample todos for User A (Alice).`);
+    console.log(`Created ${todosA.length} everyday sample tasks for User 1.`);
 
     // 5. Create sample Todos for User B
     const todosB = await Todo.bulkCreate([
       {
-        title: "Review Alice's Shared Kanban Board",
-        description: "Log in as Bob and verify read-only access to Alice's project tasks.",
+        title: "Pick up parcel",
+        description: "Collect it from the post office on the way home.",
         status: "IN_PROGRESS",
         priority: "HIGH",
         ownerId: userB.id,
       },
       {
-        title: "Prepare Sprint Feedback",
-        description: "Compile notes on board layout and performance.",
+        title: "Water the plants",
+        description: "The pots on the balcony need a good soak.",
         status: "TODO",
         priority: "LOW",
         ownerId: userB.id,
       },
     ]);
-    console.log(`Created ${todosB.length} sample todos for User B (Bob).`);
+    console.log(`Created ${todosB.length} everyday sample tasks for User 2.`);
 
     // 6. Create BoardAccess allowing User B (viewer) to view User A's (owner) board
     const access = await BoardAccess.create({
@@ -110,20 +110,20 @@ async function seed() {
       canView: true,
     });
     console.log(
-      `Created BoardAccess: User B (${userB.email}) can view User A (${userA.email})'s board (ID: ${access.id}).`
+      `Created BoardAccess: User 2 (${userB.email}) can view User 1 (${userA.email})'s board (ID: ${access.id}).`
     );
 
     console.log("\n=============================================");
     console.log("Database seeded successfully!");
     console.log("Demo Credentials:");
     console.log("---------------------------------------------");
-    console.log("1. User A (Owner with tasks & shared board):");
-    console.log("   Email:    alice@example.com");
+    console.log("1. User 1 (Owner with tasks & shared board):");
+    console.log("   Email:    user1@gmail.com");
     console.log("   Password: Password123!");
-    console.log("2. User B (Authorized viewer of User A's board):");
-    console.log("   Email:    bob@example.com");
+    console.log("2. User 2 (Authorized viewer of User 1's board):");
+    console.log("   Email:    user2@gmail.com");
     console.log("   Password: Password123!");
-    console.log("3. User C (Unauthorized user - test 403 Forbidden):");
+    console.log("3. Internal test user (Unauthorized - test 403 Forbidden):");
     console.log("   Email:    charlie@example.com");
     console.log("   Password: Password123!");
     console.log("=============================================\n");

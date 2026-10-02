@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   MoreHorizontal,
   Pencil,
@@ -45,6 +45,20 @@ export function TodoCard({
   onDragStart,
 }: TodoCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragPreviewRef = useRef<HTMLElement | null>(null);
+  const dragOverHandlerRef = useRef<((event: DragEvent) => void) | null>(null);
+
+  const removeDragPreview = () => {
+    dragPreviewRef.current?.remove();
+    dragPreviewRef.current = null;
+    if (dragOverHandlerRef.current) {
+      document.removeEventListener("dragover", dragOverHandlerRef.current);
+      dragOverHandlerRef.current = null;
+    }
+  };
+
+  useEffect(() => removeDragPreview, []);
 
   // Semantic priority status styles
   const priorityConfig: Record<
@@ -70,12 +84,58 @@ export function TodoCard({
 
   const currentPriority = priorityConfig[todo.priority] || priorityConfig.MEDIUM;
 
-  const handleDrag = (e: React.DragEvent) => {
+  const handleDragStart = (e: React.DragEvent<HTMLElement>) => {
     if (!canEdit) return;
+    removeDragPreview();
+
+    const card = e.currentTarget;
+    const bounds = card.getBoundingClientRect();
+    const offsetX = e.clientX - bounds.left;
+    const offsetY = e.clientY - bounds.top;
     e.dataTransfer.setData("text/plain", todo.id);
+    e.dataTransfer.effectAllowed = "move";
+    const emptyDragImage = document.createElement("canvas");
+    emptyDragImage.width = 1;
+    emptyDragImage.height = 1;
+    e.dataTransfer.setDragImage(emptyDragImage, 0, 0);
+
+    const preview = card.cloneNode(true) as HTMLElement;
+    preview.removeAttribute("draggable");
+    preview.setAttribute("aria-hidden", "true");
+    Object.assign(preview.style, {
+      position: "fixed",
+      top: "0",
+      left: "0",
+      width: `${bounds.width}px`,
+      margin: "0",
+      opacity: "1",
+      pointerEvents: "none",
+      userSelect: "none",
+      zIndex: "9999",
+      transition: "none",
+      transform: `translate3d(${e.clientX - offsetX}px, ${e.clientY - offsetY}px, 0) rotate(1deg) scale(1.02)`,
+      transformOrigin: `${offsetX}px ${offsetY}px`,
+      boxShadow: "0 18px 38px rgba(16, 24, 40, 0.2), 0 4px 12px rgba(16, 24, 40, 0.12)",
+      willChange: "transform",
+    });
+    document.body.appendChild(preview);
+    dragPreviewRef.current = preview;
+
+    const handleDocumentDragOver = (event: DragEvent) => {
+      preview.style.transform = `translate3d(${event.clientX - offsetX}px, ${event.clientY - offsetY}px, 0) rotate(1deg) scale(1.02)`;
+    };
+    dragOverHandlerRef.current = handleDocumentDragOver;
+    document.addEventListener("dragover", handleDocumentDragOver);
+
+    setIsDragging(true);
     if (onDragStart) {
       onDragStart(e, todo.id);
     }
+  };
+
+  const handleDragEnd = () => {
+    removeDragPreview();
+    setIsDragging(false);
   };
 
   const nextStatusMap: Record<TodoStatus, TodoStatus | null> = {
@@ -96,10 +156,11 @@ export function TodoCard({
   return (
     <article
       draggable={canEdit}
-      onDragStart={handleDrag}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       className={`orb-card orb-card-hover group relative !p-3.5 select-none ${
         canEdit ? "cursor-grab active:cursor-grabbing" : "cursor-default"
-      }`}
+      } ${isDragging ? "opacity-45 ring-2 ring-dashed ring-[var(--orb-accent)]/50 !transform-none" : ""}`}
     >
       {/* Top Row: Priority Badge + Actions Dropdown */}
       <div className="flex items-center justify-between gap-2 mb-2">
