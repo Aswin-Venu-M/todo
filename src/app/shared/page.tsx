@@ -62,7 +62,7 @@ export default async function SharedBoardsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[var(--orb-bg-app)] md:pl-[84px] pb-8">
+    <div className="min-h-screen bg-[var(--orb-bg-app)] pl-[64px] pb-8">
       <Navbar currentUser={currentUser.toSafeJSON()} />
 
       <main className="mx-auto max-w-7xl px-3 sm:px-6 pt-5">

@@ -32,7 +32,7 @@ export default async function SharedBoardPage({ params }: SharedBoardPageProps) 
   const boardOwner = await User.findByPk(ownerId);
   if (!boardOwner) {
     return (
-      <div className="min-h-screen bg-[var(--orb-bg-app)] md:pl-[84px] flex flex-col">
+      <div className="min-h-screen bg-[var(--orb-bg-app)] pl-[64px] flex flex-col">
         <Navbar currentUser={currentUser.toSafeJSON()} />
         <div className="flex flex-1 items-center justify-center p-6">
           <div className="orb-card max-w-sm w-full text-center">
@@ -65,7 +65,7 @@ export default async function SharedBoardPage({ params }: SharedBoardPageProps) 
   // 403 Forbidden Screen
   if (!accessGrant) {
     return (
-      <div className="min-h-screen bg-[var(--orb-bg-app)] md:pl-[84px] flex flex-col">
+      <div className="min-h-screen bg-[var(--orb-bg-app)] pl-[64px] flex flex-col">
         <Navbar currentUser={currentUser.toSafeJSON()} />
         <main className="flex flex-1 items-center justify-center p-6">
           <div className="orb-card max-w-md w-full text-center">
@@ -122,7 +122,7 @@ export default async function SharedBoardPage({ params }: SharedBoardPageProps) 
   const safeCurrentUser = currentUser.toSafeJSON();
 
   return (
-    <div className="min-h-screen bg-[var(--orb-bg-app)] md:pl-[84px] pb-8">
+    <div className="min-h-screen bg-[var(--orb-bg-app)] pl-[64px] pb-8">
       <Navbar currentUser={safeCurrentUser} isOwner={false} />
 
       <main className="mx-auto max-w-7xl px-3 sm:px-6 pt-5">

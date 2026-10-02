@@ -7,15 +7,18 @@ import {
   Lock,
   ArrowLeft,
   UserPlus2,
-  LayoutGrid,
-  Clock,
-  CheckCircle2,
-  AlertTriangle,
 } from "lucide-react";
 import { KanbanColumn } from "./KanbanColumn";
 import { TodoModal } from "./TodoModal";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
 import { ShareBoardModal } from "./ShareBoardModal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { TodoAttributes, TodoPriority, TodoStatus, UserSafe } from "@/lib/types";
 
 interface KanbanBoardProps {
@@ -189,67 +192,6 @@ export function KanbanBoard({
         </div>
       )}
 
-      {/* KPI METRIC CARDS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-        {/* KPI 1: Total Tasks */}
-        <div className="orb-kpi">
-          <div className="orb-kpi-header">
-            <span className="orb-kpi-label">Total Tasks</span>
-            <div className="orb-kpi-icon-pill">
-              <LayoutGrid className="size-3.5" />
-            </div>
-          </div>
-          <div>
-            <div className="orb-kpi-value">{todos.length}</div>
-            <div className="orb-kpi-subtitle">Across all board stages</div>
-          </div>
-        </div>
-
-        {/* KPI 2: In Progress */}
-        <div className="orb-kpi">
-          <div className="orb-kpi-header">
-            <span className="orb-kpi-label">In Progress</span>
-            <div className="orb-kpi-icon-pill bg-[var(--orb-fail-bg)] text-[var(--orb-fail-text)]">
-              <Clock className="size-3.5" />
-            </div>
-          </div>
-          <div>
-            <div className="orb-kpi-value">{todosByStatus.IN_PROGRESS.length}</div>
-            <div className="orb-kpi-subtitle">Currently in execution</div>
-          </div>
-        </div>
-
-        {/* KPI 3: Completed */}
-        <div className="orb-kpi">
-          <div className="orb-kpi-header">
-            <span className="orb-kpi-label">Completed</span>
-            <div className="orb-kpi-icon-pill bg-[var(--orb-pass-bg)] text-[var(--orb-pass-text)]">
-              <CheckCircle2 className="size-3.5" />
-            </div>
-          </div>
-          <div>
-            <div className="orb-kpi-value">{todosByStatus.DONE.length}</div>
-            <div className="orb-kpi-subtitle">Finished tasks</div>
-          </div>
-        </div>
-
-        {/* KPI 4: High Priority */}
-        <div className="orb-kpi">
-          <div className="orb-kpi-header">
-            <span className="orb-kpi-label">High Priority</span>
-            <div className="orb-kpi-icon-pill bg-[var(--orb-destructive-bg)] text-[var(--orb-destructive)]">
-              <AlertTriangle className="size-3.5" />
-            </div>
-          </div>
-          <div>
-            <div className="orb-kpi-value">
-              {todos.filter((t) => t.priority === "HIGH").length}
-            </div>
-            <div className="orb-kpi-subtitle">Urgent focus needed</div>
-          </div>
-        </div>
-      </div>
-
       {/* BOARD CONTROLS: SEARCH, PRIORITY FILTER & OWNER ACTIONS */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         {/* Search & Filter */}
@@ -269,18 +211,20 @@ export function KanbanBoard({
           </div>
 
           {/* Priority Select */}
-          <div className="min-w-[130px]">
-            <select
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-              className="orb-select h-9 text-xs font-semibold cursor-pointer"
+          <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+            <SelectTrigger
+              className="h-9 min-w-[140px] text-xs font-semibold border-[var(--orb-border)] bg-[var(--orb-bg-surface)] focus:ring-[var(--orb-accent)] cursor-pointer"
+              aria-label="Filter by priority"
             >
-              <option value="ALL">All Priorities</option>
-              <option value="HIGH">High Priority</option>
-              <option value="MEDIUM">Medium Priority</option>
-              <option value="LOW">Low Priority</option>
-            </select>
-          </div>
+              <SelectValue placeholder="All Priorities" />
+            </SelectTrigger>
+            <SelectContent className="text-xs font-semibold">
+              <SelectItem value="ALL" className="cursor-pointer">All Priorities</SelectItem>
+              <SelectItem value="HIGH" className="cursor-pointer">High Priority</SelectItem>
+              <SelectItem value="MEDIUM" className="cursor-pointer">Medium Priority</SelectItem>
+              <SelectItem value="LOW" className="cursor-pointer">Low Priority</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Owner Action Buttons */}

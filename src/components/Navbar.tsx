@@ -7,9 +7,15 @@ import {
   Users2,
   LogOut,
   UserPlus2,
-  Sparkles,
+  CheckSquare2,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ShareBoardModal } from "./ShareBoardModal";
 import type { UserSafe } from "@/lib/types";
 
@@ -17,6 +23,51 @@ interface NavbarProps {
   currentUser: UserSafe | null;
   onOpenNewTodo?: () => void;
   isOwner?: boolean;
+}
+
+function NavItem({
+  icon: Icon,
+  label,
+  active,
+  onClick,
+  danger,
+}: {
+  icon: React.ElementType;
+  label: string;
+  active?: boolean;
+  onClick: () => void;
+  danger?: boolean;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={onClick}
+          className={`
+            relative flex items-center justify-center w-10 h-10 rounded-xl
+            transition-all duration-150 cursor-pointer border-0 outline-none
+            ${
+              danger
+                ? "text-[var(--orb-text-muted)] hover:bg-red-50 hover:text-[var(--orb-destructive)]"
+                : active
+                ? "bg-[var(--orb-accent)] text-white shadow-sm shadow-emerald-200"
+                : "text-[var(--orb-text-muted)] hover:bg-[var(--orb-bg-muted)] hover:text-[var(--orb-text-primary)]"
+            }
+          `}
+          aria-label={label}
+        >
+          <Icon className="size-[18px]" />
+          {active && !danger && (
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-0.5 w-0.5 h-5 bg-[var(--orb-accent)] rounded-full" />
+          )}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="right" className="text-xs font-semibold">
+        {label}
+      </TooltipContent>
+    </Tooltip>
+  );
 }
 
 export function Navbar({ currentUser, isOwner = true }: NavbarProps) {
@@ -41,167 +92,108 @@ export function Navbar({ currentUser, isOwner = true }: NavbarProps) {
   const isMyBoard = pathname === "/board";
   const isSharedBoards = pathname === "/shared";
 
-  const getInitials = (name: string) => {
-    return name
+  const getInitials = (name: string) =>
+    name
       .split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase()
       .slice(0, 2);
-  };
 
   return (
-    <>
-      {/* Desktop Navigation Rail */}
-      <aside className="orb-rail hidden md:flex" aria-label="Main Navigation">
-        {/* Top: Brand Logo */}
-        <div className="flex flex-col items-center gap-1">
-          <button
-            type="button"
-            onClick={() => router.push("/board")}
-            className="flex items-center justify-center size-11 rounded-[var(--orb-radius-field)] bg-[var(--orb-primary)] text-white shadow-sm hover:scale-105 transition-transform cursor-pointer"
-            title="Kanban Workspace"
-          >
-            <Sparkles className="size-5 text-[var(--orb-accent)]" />
-          </button>
-          <span className="text-[10px] font-bold tracking-tight text-[var(--orb-text-primary)]">
-            KANBAN
-          </span>
-        </div>
-
-        {/* Center: Navigation Links */}
-        <nav className="orb-rail-nav">
-          <button
-            type="button"
-            onClick={() => router.push("/board")}
-            className={`orb-rail-link ${isMyBoard ? "active" : ""}`}
-            title="My Personal Board"
-          >
-            <div className="orb-rail-icon-box">
-              <Kanban className="size-5" />
-            </div>
-            <span className="orb-rail-label">My Board</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => router.push("/shared")}
-            className={`orb-rail-link ${isSharedBoards ? "active" : ""}`}
-            title="Boards Shared With Me"
-          >
-            <div className="orb-rail-icon-box">
-              <Users2 className="size-5" />
-            </div>
-            <span className="orb-rail-label">Shared</span>
-          </button>
-
-          {isMyBoard && isOwner && (
-            <button
-              type="button"
-              onClick={() => setIsShareModalOpen(true)}
-              className="orb-rail-link"
-              title="Manage Collaborator Access"
-            >
-              <div className="orb-rail-icon-box hover:border-[var(--orb-accent)]">
-                <UserPlus2 className="size-5 text-[var(--orb-accent)]" />
-              </div>
-              <span className="orb-rail-label">Share</span>
-            </button>
-          )}
-        </nav>
-
-        {/* Bottom: Current User & Sign Out */}
-        <div className="flex flex-col items-center gap-2 w-full mb-8">
-          {currentUser && (
-            <div
-              className="flex flex-col items-center text-center cursor-pointer group"
-              title={`${currentUser.name} (${currentUser.email})`}
-            >
-              <Avatar className="size-9 border-2 border-[var(--orb-accent-subtle)] shadow-xs group-hover:border-[var(--orb-accent)] transition-colors">
-                <AvatarFallback className="bg-[var(--orb-primary)] text-[var(--orb-accent-subtle)] text-xs font-bold font-mono">
-                  {getInitials(currentUser.name || "User")}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-[10px] font-semibold text-[var(--orb-text-muted)] truncate max-w-[70px] mt-0.5 group-hover:text-[var(--orb-text-primary)]">
-                {currentUser.name?.split(" ")[0]}
-              </span>
-            </div>
-          )}
-
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            className="orb-btn orb-btn-icon orb-btn-ghost size-8 text-[var(--orb-text-muted)] hover:text-[var(--orb-destructive)] hover:bg-[var(--orb-destructive-bg)]"
-            title="Sign Out"
-          >
-            <LogOut className="size-4" />
-          </button>
-        </div>
-      </aside>
-
-      {/* Mobile Top Navigation Bar */}
-      <header className="md:hidden sticky top-0 z-40 w-full border-b border-[var(--orb-border)] bg-[var(--orb-bg-surface)]/95 backdrop-blur-md px-4 py-2">
-        <div className="flex items-center justify-between">
-          <div
-            onClick={() => router.push("/board")}
-            className="flex items-center gap-2 cursor-pointer"
-          >
-            <div className="flex size-7 items-center justify-center rounded-[var(--orb-radius-md)] bg-[var(--orb-primary)] text-white">
-              <Sparkles className="size-3.5 text-[var(--orb-accent)]" />
-            </div>
-            <span className="font-bold text-[var(--orb-text-primary)] tracking-tight text-sm">
-              KanbanFlow
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {isMyBoard && isOwner && (
+    <TooltipProvider delayDuration={200}>
+      {/* Vertical Sidebar Rail */}
+      <aside
+        className="
+          fixed left-0 top-0 z-50 h-screen w-[64px]
+          flex flex-col items-center justify-between
+          bg-[var(--orb-bg-surface)] border-r border-[var(--orb-border)]
+          py-4
+        "
+        aria-label="Main Navigation"
+      >
+        {/* Top: Logo */}
+        <div className="flex flex-col items-center gap-5 w-full px-3">
+          {/* Brand icon */}
+          <Tooltip>
+            <TooltipTrigger asChild>
               <button
                 type="button"
-                onClick={() => setIsShareModalOpen(true)}
-                className="orb-btn orb-btn-sm orb-btn-outline"
+                onClick={() => router.push("/board")}
+                className="flex items-center justify-center size-10 rounded-xl bg-[var(--orb-primary)] text-white cursor-pointer border-0 hover:opacity-90 transition-opacity"
+                aria-label="Todo — go to board"
               >
-                <UserPlus2 className="size-3.5 text-[var(--orb-accent)]" />
-                <span>Share</span>
+                <CheckSquare2 className="size-5 text-[var(--orb-accent)]" />
               </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="text-xs font-bold">
+              Todo
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Divider */}
+          <div className="w-8 h-px bg-[var(--orb-border)]" />
+
+          {/* Nav items */}
+          <nav className="flex flex-col items-center gap-1.5 w-full">
+            <NavItem
+              icon={Kanban}
+              label="My Board"
+              active={isMyBoard}
+              onClick={() => router.push("/board")}
+            />
+            <NavItem
+              icon={Users2}
+              label="Shared Boards"
+              active={isSharedBoards}
+              onClick={() => router.push("/shared")}
+            />
+            {isMyBoard && isOwner && (
+              <NavItem
+                icon={UserPlus2}
+                label="Share Board"
+                onClick={() => setIsShareModalOpen(true)}
+              />
             )}
-
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="orb-btn orb-btn-icon orb-btn-ghost size-8 text-[var(--orb-text-muted)]"
-              title="Sign Out"
-            >
-              <LogOut className="size-4" />
-            </button>
-          </div>
+          </nav>
         </div>
 
-        {/* Mobile Navigation Pills */}
-        <div className="flex gap-2 mt-2 pt-2 border-t border-[var(--orb-border)]">
-          <button
-            type="button"
-            onClick={() => router.push("/board")}
-            className={`flex-1 orb-tab ${isMyBoard ? "active-brand" : ""}`}
-          >
-            My Board
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push("/shared")}
-            className={`flex-1 orb-tab ${isSharedBoards ? "active-brand" : ""}`}
-          >
-            Shared Boards
-          </button>
+        {/* Bottom: User avatar + logout */}
+        <div className="flex flex-col items-center gap-2 w-full px-3">
+          {currentUser && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="cursor-default">
+                  <Avatar className="size-9 border-2 border-[var(--orb-border)] hover:border-[var(--orb-accent)] transition-colors">
+                    <AvatarFallback className="bg-[var(--orb-primary)] text-white text-xs font-bold">
+                      {getInitials(currentUser.name || "User")}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="text-xs">
+                <p className="font-semibold">{currentUser.name}</p>
+                <p className="text-[var(--orb-text-muted)] font-mono text-[10px]">
+                  {currentUser.email}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+
+          <NavItem
+            icon={LogOut}
+            label={isLoggingOut ? "Signing out…" : "Sign Out"}
+            onClick={handleLogout}
+            danger
+          />
         </div>
-      </header>
+      </aside>
 
       {/* Share Board Modal */}
       <ShareBoardModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
       />
-    </>
+    </TooltipProvider>
   );
 }

@@ -52,7 +52,7 @@ export default function LoginPage() {
           <Sparkles className="size-5 text-[var(--orb-accent)]" />
         </div>
         <h2 className="mt-3 text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--orb-text-primary)]">
-          Welcome to KanbanFlow
+          Welcome to Todo
         </h2>
         <p className="mt-0.5 text-xs text-[var(--orb-text-muted)] font-medium">
           Collaborative Multi-User Kanban & Board Access System

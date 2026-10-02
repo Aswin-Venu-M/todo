@@ -4,50 +4,50 @@
    1. DESIGN TOKENS & CSS VARIABLES
    ========================================================================== */
 :root {
-  /* Brand Palette */
-  --orb-primary: #1E1035;
-  --orb-dark: #180321;
-  --orb-surface-dark: #2D2335;
-  --orb-accent: #9723FF;
-  --orb-accent-hover: #8310E8;
-  --orb-accent-subtle: #F4E8FF;
-  --orb-blue: #5368FF;
-  --orb-blue-subtle: #EDF0FF;
+  /* Brand Palette - Emerald Green Modern Theme */
+  --orb-primary: #064E3B; /* Deep emerald forest */
+  --orb-dark: #022C22;    /* Ultra deep pine */
+  --orb-surface-dark: #064E3B;
+  --orb-accent: #059669;  /* Vibrant emerald */
+  --orb-accent-hover: #047857; /* Rich dark emerald */
+  --orb-accent-subtle: #ECFDF5; /* Crisp mint background */
+  --orb-blue: #0284C7;
+  --orb-blue-subtle: #F0F9FF;
 
   /* Surfaces & Backgrounds */
-  --orb-bg-app: #F8F9FB;
+  --orb-bg-app: #F8FAF9;
   --orb-bg-surface: #FFFFFF;
-  --orb-bg-muted: #F4F5F8;
-  --orb-bg-hover: #F0F2F6;
+  --orb-bg-muted: #F1F5F3;
+  --orb-bg-hover: #E8EFEA;
 
   /* Borders & Dividers */
-  --orb-border: #E2E4EB;
-  --orb-border-hover: #D0D4E0;
-  --orb-border-focus: #9723FF;
+  --orb-border: #E2E8E4;
+  --orb-border-hover: #CBD5CF;
+  --orb-border-focus: #059669;
 
   /* Text & Foreground */
-  --orb-text-primary: #1E1035;
-  --orb-text-secondary: #463B4D;
-  --orb-text-muted: #74768B;
-  --orb-text-subtle: #9CA3AF;
+  --orb-text-primary: #0F172A;
+  --orb-text-secondary: #334155;
+  --orb-text-muted: #64748B;
+  --orb-text-subtle: #94A3B8;
   --orb-text-inverse: #FFFFFF;
 
   /* Diagnostic Status Semantics */
-  --orb-pass: #71D64B;
-  --orb-pass-bg: #E8F8EE;
-  --orb-pass-text: #1E7E34;
+  --orb-pass: #10B981;
+  --orb-pass-bg: #ECFDF5;
+  --orb-pass-text: #047857;
 
-  --orb-fail: #FE8E4B;
-  --orb-fail-bg: #FFF0E8;
-  --orb-fail-text: #C04910;
+  --orb-fail: #F97316;
+  --orb-fail-bg: #FFF7ED;
+  --orb-fail-text: #C2410C;
 
-  --orb-weak: #FFED00;
-  --orb-weak-bg: #FFFDE0;
-  --orb-weak-text: #7A7000;
+  --orb-weak: #EAB308;
+  --orb-weak-bg: #FEFCE8;
+  --orb-weak-text: #854D0E;
 
-  --orb-neutral: #A0A4AB;
-  --orb-neutral-bg: #F4F5F8;
-  --orb-neutral-text: #4A4A4A;
+  --orb-neutral: #94A3B8;
+  --orb-neutral-bg: #F1F5F9;
+  --orb-neutral-text: #475569;
 
   --orb-destructive: #EF4444;
   --orb-destructive-bg: #FEE2E2;
@@ -57,16 +57,16 @@
   --orb-radius-md: 10px;
   --orb-radius-lg: 12px;
   --orb-radius-field: 14px;
-  --orb-radius-card: 24px;
-  --orb-radius-container: 28px;
+  --orb-radius-card: 20px;
+  --orb-radius-container: 24px;
   --orb-radius-full: 9999px;
 
   /* Elevation Shadows */
-  --orb-shadow-xs: 0 1px 2px rgba(30, 16, 53, 0.04);
-  --orb-shadow-sm: 0 2px 8px rgba(30, 16, 53, 0.05);
-  --orb-shadow-md: 0 6px 16px rgba(30, 16, 53, 0.08);
-  --orb-shadow-lg: 0 12px 32px rgba(30, 16, 53, 0.12);
-  --orb-shadow-popup: 0 20px 48px rgba(24, 3, 33, 0.35);
+  --orb-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --orb-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
+  --orb-shadow-md: 0 6px 16px rgba(15, 23, 42, 0.08);
+  --orb-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --orb-shadow-popup: 0 20px 48px rgba(2, 44, 34, 0.25);
 
   /* Typography */
   --orb-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -99,29 +99,11 @@ body.orb-body,
   box-sizing: inherit;
 }
 
-/* Flashlight Dot-Matrix Dynamic Background */
+/* Clean Subtle Background Dot Grid */
 .orb-dot-grid {
   position: relative;
   background-image: radial-gradient(var(--orb-border) 1px, transparent 1px);
   background-size: 20px 20px;
-}
-
-.orb-dot-grid::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle 90px at var(--mouse-x, -100px) var(--mouse-y, -100px),
-    var(--orb-primary) 0%,
-    transparent 100%
-  );
-  mask-image: radial-gradient(#000 1px, transparent 1px);
-  -webkit-mask-image: radial-gradient(#000 1px, transparent 1px);
-  mask-size: 20px 20px;
-  -webkit-mask-size: 20px 20px;
-  pointer-events: none;
-  opacity: 0.6;
-  z-index: 0;
 }
 
 /* Sleek Scrollbar */
@@ -170,7 +152,7 @@ body.orb-body,
 
 .orb-btn:focus-visible {
   ring: 2px solid var(--orb-accent);
-  box-shadow: 0 0 0 3px rgba(151, 35, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25);
 }
 
 .orb-btn:active {
@@ -190,17 +172,17 @@ body.orb-body,
   color: var(--orb-text-inverse);
 }
 .orb-btn-primary:hover {
-  background-color: #2b174b;
+  background-color: #043f30;
 }
 
 .orb-btn-brand {
   background-color: var(--orb-accent);
   color: var(--orb-text-inverse);
-  box-shadow: 0 4px 12px rgba(151, 35, 255, 0.22);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.22);
 }
 .orb-btn-brand:hover {
   background-color: var(--orb-accent-hover);
-  box-shadow: 0 6px 16px rgba(151, 35, 255, 0.3);
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3);
 }
 
 .orb-btn-outline {
@@ -308,8 +290,8 @@ body.orb-body,
 .orb-select:focus,
 .orb-textarea:focus {
   background-color: #FFFFFF;
-  border-color: rgba(151, 35, 255, 0.4);
-  box-shadow: 0 0 0 3px rgba(151, 35, 255, 0.15);
+  border-color: rgba(5, 150, 105, 0.4);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
 }
 
 .orb-input:disabled,
@@ -460,7 +442,7 @@ body.orb-body,
 .orb-tab.active-brand {
   background-color: var(--orb-accent);
   color: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(151, 35, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
 }
 
 /* ==========================================================================
@@ -519,7 +501,7 @@ body.orb-body,
 .orb-badge-subtle-brand {
   background-color: var(--orb-accent-subtle);
   color: var(--orb-accent);
-  border: 1px solid rgba(151, 35, 255, 0.25);
+  border: 1px solid rgba(5, 150, 105, 0.25);
 }
 
 /* ==========================================================================
@@ -538,7 +520,7 @@ body.orb-body,
 }
 
 .orb-kpi:hover {
-  border-color: rgba(151, 35, 255, 0.3);
+  border-color: rgba(5, 150, 105, 0.3);
   box-shadow: var(--orb-shadow-md);
 }
 
@@ -585,7 +567,7 @@ body.orb-body,
    9. NAVIGATION RAIL
    ========================================================================== */
 .orb-rail {
-  width: 84px;
+  width: 64px;
   height: 100vh;
   position: fixed;
   left: 0;
@@ -639,7 +621,7 @@ body.orb-body,
   background-color: var(--orb-accent);
   color: #FFFFFF;
   border-color: transparent;
-  box-shadow: 0 4px 14px rgba(151, 35, 255, 0.3);
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);
 }
 
 .orb-rail-label {
