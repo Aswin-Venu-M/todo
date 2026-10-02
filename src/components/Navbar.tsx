@@ -6,23 +6,19 @@ import {
   Kanban,
   Users2,
   LogOut,
-  UserPlus2,
   CheckSquare2,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ShareBoardModal } from "./ShareBoardModal";
 import type { UserSafe } from "@/lib/types";
 
 interface NavbarProps {
   currentUser: UserSafe | null;
   onOpenNewTodo?: () => void;
-  isOwner?: boolean;
 }
 
 function NavItem({
@@ -70,11 +66,10 @@ function NavItem({
   );
 }
 
-export function Navbar({ currentUser, isOwner = true }: NavbarProps) {
+export function Navbar({ currentUser }: NavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -101,9 +96,7 @@ export function Navbar({ currentUser, isOwner = true }: NavbarProps) {
       .slice(0, 2);
 
   return (
-    <TooltipProvider delayDuration={200}>
-      {/* Vertical Sidebar Rail */}
-      <aside
+    <aside
         className="
           fixed left-0 top-0 z-50 h-screen w-[64px]
           flex flex-col items-center justify-between
@@ -148,13 +141,6 @@ export function Navbar({ currentUser, isOwner = true }: NavbarProps) {
               active={isSharedBoards}
               onClick={() => router.push("/shared")}
             />
-            {isMyBoard && isOwner && (
-              <NavItem
-                icon={UserPlus2}
-                label="Share Board"
-                onClick={() => setIsShareModalOpen(true)}
-              />
-            )}
           </nav>
         </div>
 
@@ -188,12 +174,5 @@ export function Navbar({ currentUser, isOwner = true }: NavbarProps) {
           />
         </div>
       </aside>
-
-      {/* Share Board Modal */}
-      <ShareBoardModal
-        isOpen={isShareModalOpen}
-        onClose={() => setIsShareModalOpen(false)}
-      />
-    </TooltipProvider>
   );
 }

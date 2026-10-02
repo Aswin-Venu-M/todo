@@ -76,11 +76,19 @@ export async function PATCH(request: Request, context: RouteContext) {
       );
     }
 
-    // Strict Authorization: ONLY the todo owner can edit or modify the todo.
-    // Viewers are read-only by default.
-    if (todo.ownerId !== session.userId) {
+    const isOwner = todo.ownerId === session.userId;
+    const editGrant = isOwner ? null : await BoardAccess.findOne({
+      where: {
+        ownerId: todo.ownerId,
+        viewerId: session.userId,
+        canView: true,
+        canEdit: true,
+      },
+    });
+
+    if (!isOwner && !editGrant) {
       return NextResponse.json(
-        { error: "Forbidden: Only the owner can modify this todo" },
+        { error: "Forbidden: You do not have edit access to this board" },
         { status: 403 }
       );
     }
@@ -138,10 +146,9 @@ export async function DELETE(request: Request, context: RouteContext) {
       );
     }
 
-    // Strict Authorization: ONLY the todo owner can delete the todo.
     if (todo.ownerId !== session.userId) {
       return NextResponse.json(
-        { error: "Forbidden: Only the owner can delete this todo" },
+        { error: "Forbidden: Only the board owner can delete this todo" },
         { status: 403 }
       );
     }

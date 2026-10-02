@@ -31,6 +31,7 @@ export async function GET(request: Request, context: RouteContext) {
     }
 
     const isOwner = session.userId === ownerId;
+    let canEdit = isOwner;
 
     // Backend Authorization Rule:
     // 1. Authenticated user can ALWAYS access their own board.
@@ -54,6 +55,8 @@ export async function GET(request: Request, context: RouteContext) {
           { status: 403 }
         );
       }
+
+      canEdit = accessRecord.canEdit;
     }
 
     // Retrieve all todos belonging to this board's owner
@@ -67,6 +70,7 @@ export async function GET(request: Request, context: RouteContext) {
       owner: owner.toSafeJSON ? owner.toSafeJSON() : owner,
       isOwner,
       canView: true,
+      canEdit,
       todos,
     });
   } catch (error) {

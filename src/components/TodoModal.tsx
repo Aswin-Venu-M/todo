@@ -141,7 +141,7 @@ export function TodoModal({
           {/* Priority Segmented Control */}
           <div className="orb-form-group">
             <label className="orb-label">Priority</label>
-            <div className="orb-tabs inline-flex">
+            <div className="orb-tabs inline-flex self-start">
               <button
                 type="button"
                 onClick={() => setPriority("LOW")}
@@ -169,7 +169,7 @@ export function TodoModal({
           {/* Status Segmented Control */}
           <div className="orb-form-group">
             <label className="orb-label">Status Stage</label>
-            <div className="orb-tabs inline-flex">
+            <div className="orb-tabs inline-flex self-start">
               <button
                 type="button"
                 onClick={() => setStatus("TODO")}

@@ -123,21 +123,31 @@ export default async function SharedBoardPage({ params }: SharedBoardPageProps) 
 
   return (
     <div className="min-h-screen bg-[var(--orb-bg-app)] pl-[64px] pb-8">
-      <Navbar currentUser={safeCurrentUser} isOwner={false} />
+      <Navbar currentUser={safeCurrentUser} />
 
       <main className="mx-auto max-w-7xl px-3 sm:px-6 pt-5">
-        <div className="mb-4 flex flex-col gap-0.5">
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--orb-text-primary)]">
-              {safeOwner.name}'s Board
-            </h1>
-            <span className="orb-badge orb-badge-subtle-brand text-[11px] py-0.5 px-2.5">
-              READ-ONLY COLLABORATOR
-            </span>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col gap-0.5">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--orb-text-primary)]">
+                {safeOwner.name}'s Board
+              </h1>
+              <span className="orb-badge orb-badge-subtle-brand text-[11px] py-0.5 px-2.5">
+                {accessGrant.canEdit ? "EDITOR" : "READ-ONLY COLLABORATOR"}
+              </span>
+            </div>
+            <p className="text-xs text-[var(--orb-text-muted)] font-medium">
+              Shared with your account by {safeOwner.email}
+            </p>
           </div>
-          <p className="text-xs text-[var(--orb-text-muted)] font-medium">
-            Shared with your account by {safeOwner.email}
-          </p>
+
+          <Link
+            href="/board"
+            className="orb-btn orb-btn-sm orb-btn-outline shrink-0"
+          >
+            <ArrowLeft className="size-3.5" />
+            Back to my board
+          </Link>
         </div>
 
         <KanbanBoard
@@ -145,6 +155,7 @@ export default async function SharedBoardPage({ params }: SharedBoardPageProps) 
           owner={safeOwner}
           currentUser={safeCurrentUser}
           isOwner={false}
+          canEdit={accessGrant.canEdit}
         />
       </main>
     </div>

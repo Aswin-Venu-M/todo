@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
-import { Todo } from "@/lib/db";
+import { Todo, BoardAccess } from "@/lib/db";
 import { CreateTodoSchema } from "@/lib/validations";
 
 export async function GET() {
@@ -48,7 +48,26 @@ export async function POST(request: Request) {
       );
     }
 
-    const { title, description, status, priority } = parseResult.data;
+    const { title, description, status, priority, ownerId } = parseResult.data;
+    const targetOwnerId = ownerId ?? session.userId;
+
+    if (targetOwnerId !== session.userId) {
+      const access = await BoardAccess.findOne({
+        where: {
+          ownerId: targetOwnerId,
+          viewerId: session.userId,
+          canView: true,
+          canEdit: true,
+        },
+      });
+
+      if (!access) {
+        return NextResponse.json(
+          { error: "Forbidden: You do not have edit access to this board" },
+          { status: 403 }
+        );
+      }
+    }
 
     // Security requirement: Never trust ownerId from frontend.
     // Explicitly enforce ownerId from authenticated session token.
@@ -57,7 +76,7 @@ export async function POST(request: Request) {
       description: description || null,
       status,
       priority,
-      ownerId: session.userId,
+      ownerId: targetOwnerId,
     });
 
     return NextResponse.json(

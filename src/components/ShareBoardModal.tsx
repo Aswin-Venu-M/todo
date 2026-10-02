@@ -10,11 +10,24 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { UserCheck, Trash2, ShieldAlert, Loader2, UserPlus } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface GrantedAccess {
   id: string;
   viewerId: string;
   canView: boolean;
+  canEdit: boolean;
   viewer: {
     id: string;
     name: string;
@@ -33,6 +46,7 @@ export function ShareBoardModal({ isOpen, onClose }: ShareBoardModalProps) {
   const [isLoadingList, setIsLoadingList] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [revokingId, setRevokingId] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -117,6 +131,34 @@ export function ShareBoardModal({ isOpen, onClose }: ShareBoardModalProps) {
     }
   };
 
+  const handleUpdateAccess = async (access: GrantedAccess, canEdit: boolean) => {
+    if (canEdit === access.canEdit) return;
+
+    setUpdatingId(access.viewerId);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const res = await fetch(`/api/boards/access/${access.viewerId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ canEdit }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to update access");
+      }
+
+      setSuccessMessage(data.message);
+      await fetchAccessList();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to update access");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md bg-[var(--orb-bg-surface)] border-[var(--orb-border)] rounded-[var(--orb-radius-card)] p-6">
@@ -125,7 +167,7 @@ export function ShareBoardModal({ isOpen, onClose }: ShareBoardModalProps) {
             Board Collaborators
           </DialogTitle>
           <DialogDescription className="text-xs text-[var(--orb-text-muted)]">
-            Grant read-only access to authenticated team members to inspect your Kanban board.
+            Grant view or edit access to authenticated team members on your Kanban board.
           </DialogDescription>
         </DialogHeader>
 
@@ -175,24 +217,6 @@ export function ShareBoardModal({ isOpen, onClose }: ShareBoardModalProps) {
               </div>
             </div>
 
-            {/* Quick select buttons */}
-            <div className="flex items-center gap-2 text-xs text-[var(--orb-text-muted)] pt-1">
-              <span className="text-[11px]">Quick invite:</span>
-              <button
-                type="button"
-                onClick={() => setEmail("bob@example.com")}
-                className="orb-btn orb-btn-sm orb-btn-outline font-mono text-[10px] h-6 px-2"
-              >
-                bob@example.com
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmail("charlie@example.com")}
-                className="orb-btn orb-btn-sm orb-btn-outline font-mono text-[10px] h-6 px-2"
-              >
-                charlie@example.com
-              </button>
-            </div>
           </form>
 
           {/* Collaborators List */}
@@ -234,22 +258,44 @@ export function ShareBoardModal({ isOpen, onClose }: ShareBoardModalProps) {
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="orb-badge orb-badge-subtle-pass text-[9px] py-0.5 px-2">
-                        CAN VIEW
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleRevokeAccess(access.viewerId)}
-                        disabled={revokingId === access.viewerId}
-                        className="orb-btn orb-btn-icon orb-btn-destructive size-7 cursor-pointer"
-                        title="Revoke access"
-                      >
-                        {revokingId === access.viewerId ? (
-                          <Loader2 className="size-3.5 animate-spin" />
-                        ) : (
-                          <Trash2 className="size-3.5" />
-                        )}
-                      </button>
+                      <div className="relative">
+                        <Select
+                          value={access.canEdit ? "edit" : "view"}
+                          onValueChange={(value) =>
+                            handleUpdateAccess(access, value === "edit")
+                          }
+                          disabled={updatingId === access.viewerId || revokingId === access.viewerId}
+                        >
+                          <SelectTrigger
+                            aria-label={`Access level for ${access.viewer.name}`}
+                            className="h-8 w-[92px] border-[var(--orb-border)] bg-[var(--orb-bg-surface)] px-2.5 py-1 text-xs font-semibold text-[var(--orb-text-primary)] focus:ring-[var(--orb-accent)] disabled:cursor-wait disabled:opacity-60"
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="text-xs font-semibold">
+                            <SelectItem value="view">View</SelectItem>
+                            <SelectItem value="edit">Edit</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            onClick={() => handleRevokeAccess(access.viewerId)}
+                            disabled={revokingId === access.viewerId || updatingId === access.viewerId}
+                            aria-label={`Revoke access for ${access.viewer.name}`}
+                            className="orb-btn orb-btn-icon orb-btn-destructive size-7 cursor-pointer"
+                          >
+                            {revokingId === access.viewerId ? (
+                              <Loader2 className="size-3.5 animate-spin" />
+                            ) : (
+                              <Trash2 className="size-3.5" />
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent className="text-xs">Revoke access</TooltipContent>
+                      </Tooltip>
                     </div>
                   </div>
                 ))}
@@ -258,15 +304,6 @@ export function ShareBoardModal({ isOpen, onClose }: ShareBoardModalProps) {
           </div>
         </div>
 
-        <div className="flex justify-end mt-4 pt-3 border-t border-[var(--orb-border)]">
-          <button
-            type="button"
-            onClick={onClose}
-            className="orb-btn orb-btn-outline"
-          >
-            Done
-          </button>
-        </div>
       </DialogContent>
     </Dialog>
   );

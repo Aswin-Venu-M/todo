@@ -4,6 +4,7 @@ import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Dialog = DialogPrimitive.Root;
 
@@ -43,10 +44,18 @@ const DialogContent = React.forwardRef<
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none cursor-pointer">
-        <X className="size-4 text-zinc-500" />
-        <span className="sr-only">Close</span>
-      </DialogPrimitive.Close>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogPrimitive.Close
+            aria-label="Close"
+            className="absolute right-4 top-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none cursor-pointer"
+          >
+            <X className="size-4 text-zinc-500" />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        </TooltipTrigger>
+        <TooltipContent className="text-xs">Close</TooltipContent>
+      </Tooltip>
     </DialogPrimitive.Content>
   </DialogPortal>
 ));

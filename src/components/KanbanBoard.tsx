@@ -4,8 +4,6 @@ import React, { useState, useMemo } from "react";
 import {
   Plus,
   Search,
-  Lock,
-  ArrowLeft,
   UserPlus2,
 } from "lucide-react";
 import { KanbanColumn } from "./KanbanColumn";
@@ -26,6 +24,7 @@ interface KanbanBoardProps {
   owner: UserSafe;
   currentUser: UserSafe;
   isOwner: boolean;
+  canEdit?: boolean;
   onRefresh?: () => void;
 }
 
@@ -34,7 +33,9 @@ export function KanbanBoard({
   owner,
   currentUser,
   isOwner,
+  canEdit: canEditGrant = false,
 }: KanbanBoardProps) {
+  const canEdit = isOwner || canEditGrant;
   const [todos, setTodos] = useState<TodoAttributes[]>(initialTodos);
   const [searchQuery, setSearchQuery] = useState("");
   const [priorityFilter, setPriorityFilter] = useState<string>("ALL");
@@ -79,7 +80,7 @@ export function KanbanBoard({
     const res = await fetch("/api/todos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data, ...(!isOwner && { ownerId: owner.id }) }),
     });
 
     const result = await res.json();
@@ -117,7 +118,7 @@ export function KanbanBoard({
 
   // Status Change (via buttons or drag and drop)
   const handleStatusChange = async (todoId: string, newStatus: TodoStatus) => {
-    if (!isOwner) return;
+    if (!canEdit) return;
 
     // Optimistic UI update
     const previousTodos = [...todos];
@@ -143,7 +144,7 @@ export function KanbanBoard({
 
   // Delete Todo
   const handleDeleteTodo = async (todoId: string) => {
-    if (!isOwner) return;
+    if (!canEdit) return;
 
     const previousTodos = [...todos];
     setTodos((prev) => prev.filter((t) => t.id !== todoId));
@@ -164,40 +165,12 @@ export function KanbanBoard({
 
   return (
     <div className="space-y-4">
-      {/* Read-Only Banner for Viewers */}
-      {!isOwner && (
-        <div className="orb-card p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-[var(--orb-border)] bg-[var(--orb-bg-surface)]">
-          <div className="flex items-center gap-2.5">
-            <div className="flex size-7 items-center justify-center rounded-[var(--orb-radius-md)] bg-[var(--orb-accent-subtle)] text-[var(--orb-accent)]">
-              <Lock className="size-3.5 shrink-0" />
-            </div>
-            <div>
-              <span className="orb-badge orb-badge-subtle-brand text-[9.5px] mr-2">
-                READ-ONLY COLLABORATOR
-              </span>
-              <span className="text-xs text-[var(--orb-text-secondary)]">
-                Viewing <strong className="text-[var(--orb-text-primary)]">{owner.name}'s</strong> board ({owner.email}).
-              </span>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => (window.location.href = "/board")}
-            className="orb-btn orb-btn-sm orb-btn-outline cursor-pointer shrink-0"
-          >
-            <ArrowLeft className="size-3" />
-            Back to my board
-          </button>
-        </div>
-      )}
-
       {/* BOARD CONTROLS: SEARCH, PRIORITY FILTER & OWNER ACTIONS */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         {/* Search & Filter */}
-        <div className="flex flex-wrap items-center gap-2.5 flex-1">
+        <div className="flex flex-nowrap items-center gap-2.5 flex-1">
           {/* Search Box */}
-          <div className="orb-input-wrap orb-input-icon-left min-w-[200px] max-w-xs flex-1">
+          <div className="orb-input-wrap orb-input-icon-left min-w-0 max-w-xs flex-1">
             <div className="orb-icon-slot-left">
               <Search className="size-3.5 text-[var(--orb-text-muted)]" />
             </div>
@@ -213,7 +186,7 @@ export function KanbanBoard({
           {/* Priority Select */}
           <Select value={priorityFilter} onValueChange={setPriorityFilter}>
             <SelectTrigger
-              className="h-9 min-w-[140px] text-xs font-semibold border-[var(--orb-border)] bg-[var(--orb-bg-surface)] focus:ring-[var(--orb-accent)] cursor-pointer"
+              className="h-9 w-[180px] shrink-0 text-xs font-semibold border-[var(--orb-border)] bg-[var(--orb-bg-surface)] focus:ring-[var(--orb-accent)] cursor-pointer"
               aria-label="Filter by priority"
             >
               <SelectValue placeholder="All Priorities" />
@@ -228,16 +201,18 @@ export function KanbanBoard({
         </div>
 
         {/* Owner Action Buttons */}
-        {isOwner && (
+        {canEdit && (
           <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => setIsShareModalOpen(true)}
-              className="orb-btn orb-btn-sm orb-btn-outline hidden sm:inline-flex"
-            >
-              <UserPlus2 className="size-3.5 text-[var(--orb-accent)]" />
-              <span>Share Board</span>
-            </button>
+            {isOwner && (
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(true)}
+                className="orb-btn orb-btn-sm orb-btn-outline hidden sm:inline-flex"
+              >
+                <UserPlus2 className="size-3.5 text-[var(--orb-accent)]" />
+                <span>Share Board</span>
+              </button>
+            )}
 
             <button
               type="button"
@@ -261,6 +236,7 @@ export function KanbanBoard({
           title="Todo"
           todos={todosByStatus.TODO}
           isOwner={isOwner}
+          canEdit={canEdit}
           onEdit={(todo) => setEditingTodo(todo)}
           onDelete={(todo) => setDeletingTodo(todo)}
           onStatusChange={handleStatusChange}
@@ -276,6 +252,7 @@ export function KanbanBoard({
           title="In Progress"
           todos={todosByStatus.IN_PROGRESS}
           isOwner={isOwner}
+          canEdit={canEdit}
           onEdit={(todo) => setEditingTodo(todo)}
           onDelete={(todo) => setDeletingTodo(todo)}
           onStatusChange={handleStatusChange}
@@ -291,6 +268,7 @@ export function KanbanBoard({
           title="Done"
           todos={todosByStatus.DONE}
           isOwner={isOwner}
+          canEdit={canEdit}
           onEdit={(todo) => setEditingTodo(todo)}
           onDelete={(todo) => setDeletingTodo(todo)}
           onStatusChange={handleStatusChange}
@@ -303,28 +281,34 @@ export function KanbanBoard({
       </div>
 
       {/* Create Todo Modal */}
-      <TodoModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateTodo}
-        defaultStatus={createModalDefaultStatus}
-      />
+      {canEdit && (
+        <TodoModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={handleCreateTodo}
+          defaultStatus={createModalDefaultStatus}
+        />
+      )}
 
       {/* Edit Todo Modal */}
-      <TodoModal
-        isOpen={!!editingTodo}
-        onClose={() => setEditingTodo(null)}
-        initialTodo={editingTodo}
-        onSubmit={handleUpdateTodo}
-      />
+      {canEdit && (
+        <TodoModal
+          isOpen={!!editingTodo}
+          onClose={() => setEditingTodo(null)}
+          initialTodo={editingTodo}
+          onSubmit={handleUpdateTodo}
+        />
+      )}
 
       {/* Confirm Delete Modal */}
-      <ConfirmDeleteModal
-        isOpen={!!deletingTodo}
-        todo={deletingTodo}
-        onClose={() => setDeletingTodo(null)}
-        onConfirm={handleDeleteTodo}
-      />
+      {canEdit && (
+        <ConfirmDeleteModal
+          isOpen={!!deletingTodo}
+          todo={deletingTodo}
+          onClose={() => setDeletingTodo(null)}
+          onConfirm={handleDeleteTodo}
+        />
+      )}
 
       {/* Share Board Modal */}
       <ShareBoardModal

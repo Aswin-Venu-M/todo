@@ -49,6 +49,7 @@ export async function GET() {
           id: access.id,
           ownerId: access.ownerId,
           canView: access.canView,
+          canEdit: access.canEdit,
           createdAt: access.createdAt,
           owner,
           todoCount,

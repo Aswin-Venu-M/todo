@@ -3,7 +3,7 @@ import type { BoardAccessAttributes } from "@/lib/types";
 
 export type BoardAccessCreationAttributes = Optional<
   BoardAccessAttributes,
-  "id" | "canView" | "createdAt" | "updatedAt"
+  "id" | "canView" | "canEdit" | "createdAt" | "updatedAt"
 >;
 
 export class BoardAccess
@@ -14,6 +14,7 @@ export class BoardAccess
   declare ownerId: string;
   declare viewerId: string;
   declare canView: boolean;
+  declare canEdit: boolean;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 }
@@ -48,6 +49,11 @@ export function initBoardAccessModel(sequelize: Sequelize) {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true,
+      },
+      canEdit: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       },
     },
     {

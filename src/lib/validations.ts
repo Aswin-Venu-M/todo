@@ -19,6 +19,7 @@ export const CreateTodoSchema = z.object({
   description: z.string().trim().max(1000, "Description is too long").optional().nullable(),
   status: TodoStatusEnum.default("TODO"),
   priority: TodoPriorityEnum.default("MEDIUM"),
+  ownerId: z.string().uuid().optional(),
 });
 
 export const UpdateTodoSchema = z.object({
@@ -31,6 +32,11 @@ export const UpdateTodoSchema = z.object({
 export const GrantAccessSchema = z.object({
   email: z.string().trim().email("Enter a valid user email address").toLowerCase(),
   canView: z.boolean().default(true),
+  canEdit: z.boolean().optional(),
+});
+
+export const UpdateAccessSchema = z.object({
+  canEdit: z.boolean(),
 });
 
 export type LoginInput = z.infer<typeof LoginSchema>;

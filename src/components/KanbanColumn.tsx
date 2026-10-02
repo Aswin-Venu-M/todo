@@ -3,6 +3,11 @@
 import React, { useState } from "react";
 import { Circle, Clock, CheckCircle2, Plus } from "lucide-react";
 import { TodoCard } from "./TodoCard";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { TodoAttributes, TodoPriority, TodoStatus } from "@/lib/types";
 
 interface KanbanColumnProps {
@@ -10,6 +15,7 @@ interface KanbanColumnProps {
   title: string;
   todos: TodoAttributes[];
   isOwner: boolean;
+  canEdit: boolean;
   onEdit: (todo: TodoAttributes) => void;
   onDelete: (todo: TodoAttributes) => void;
   onStatusChange: (todoId: string, newStatus: TodoStatus) => void;
@@ -23,6 +29,7 @@ export function KanbanColumn({
   title,
   todos,
   isOwner,
+  canEdit,
   onEdit,
   onDelete,
   onStatusChange,
@@ -53,20 +60,20 @@ export function KanbanColumn({
   const IconComponent = columnConfig.icon;
 
   const handleDragOver = (e: React.DragEvent) => {
-    if (!isOwner) return;
+    if (!canEdit) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
     setIsDragOver(true);
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
-    if (!isOwner) return;
+    if (!canEdit) return;
     e.preventDefault();
     setIsDragOver(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
-    if (!isOwner) return;
+    if (!canEdit) return;
     e.preventDefault();
     setIsDragOver(false);
     const todoId = e.dataTransfer.getData("text/plain");
@@ -96,15 +103,22 @@ export function KanbanColumn({
           </span>
         </div>
 
-        {isOwner && onOpenCreateModal && (
-          <button
-            type="button"
-            onClick={() => onOpenCreateModal(status)}
-            className="orb-btn orb-btn-icon orb-btn-ghost size-6 text-[var(--orb-text-muted)] hover:text-[var(--orb-text-primary)]"
-            title={`Add task to ${title}`}
-          >
-            <Plus className="size-3.5" />
-          </button>
+        {canEdit && onOpenCreateModal && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={() => onOpenCreateModal(status)}
+                className="orb-btn orb-btn-icon orb-btn-ghost size-6 text-[var(--orb-text-muted)] hover:text-[var(--orb-text-primary)]"
+                aria-label={`Add task to ${title}`}
+              >
+                <Plus className="size-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent className="text-xs">
+              Add task to {title}
+            </TooltipContent>
+          </Tooltip>
         )}
       </div>
 
@@ -113,7 +127,7 @@ export function KanbanColumn({
         {todos.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center rounded-[var(--orb-radius-lg)] border border-dashed border-[var(--orb-border)] p-6 text-center my-2">
             <span className="text-xs font-medium text-[var(--orb-text-muted)]">No tasks in this stage</span>
-            {isOwner && onOpenCreateModal && (
+            {canEdit && onOpenCreateModal && (
               <button
                 type="button"
                 onClick={() => onOpenCreateModal(status)}
@@ -130,6 +144,7 @@ export function KanbanColumn({
               key={todo.id}
               todo={todo}
               isOwner={isOwner}
+              canEdit={canEdit}
               onEdit={onEdit}
               onDelete={onDelete}
               onStatusChange={onStatusChange}

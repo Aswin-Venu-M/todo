@@ -34,6 +34,7 @@ export interface BoardAccessAttributes {
   ownerId: string;
   viewerId: string;
   canView: boolean;
+  canEdit: boolean;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   owner?: UserSafe;
@@ -50,5 +51,6 @@ export interface BoardViewData {
   owner: UserSafe;
   isOwner: boolean;
   canView: boolean;
+  canEdit: boolean;
   todos: TodoAttributes[];
 }

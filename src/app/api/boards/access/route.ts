@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { email, canView } = parseResult.data;
+    const { email, canView, canEdit } = parseResult.data;
 
     // Check if the user is attempting to share with themselves
     if (email.toLowerCase() === session.email.toLowerCase()) {
@@ -88,11 +88,13 @@ export async function POST(request: Request) {
         ownerId: session.userId,
         viewerId: targetUser.id,
         canView,
+        canEdit: canEdit ?? false,
       },
     });
 
-    if (!created && accessRecord.canView !== canView) {
+    if (!created && (accessRecord.canView !== canView || (canEdit !== undefined && accessRecord.canEdit !== canEdit))) {
       accessRecord.canView = canView;
+      if (canEdit !== undefined) accessRecord.canEdit = canEdit;
       await accessRecord.save();
     }
 
@@ -110,6 +112,7 @@ export async function POST(request: Request) {
             email: targetUser.email,
           },
           canView: accessRecord.canView,
+          canEdit: accessRecord.canEdit,
         },
       },
       { status: created ? 201 : 200 }

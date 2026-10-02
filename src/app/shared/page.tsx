@@ -52,6 +52,7 @@ export default async function SharedBoardsPage() {
         ownerName: ownerInstance.name,
         ownerEmail: ownerInstance.email,
         todoCount,
+        canEdit: access.canEdit,
         grantedAt: access.createdAt,
       };
     })
@@ -76,7 +77,7 @@ export default async function SharedBoardsPage() {
             </span>
           </div>
           <p className="text-xs text-[var(--orb-text-muted)] font-medium">
-            Collaborative boards shared with your account for read-only inspection
+            Collaborative boards shared with your account
           </p>
         </div>
 
@@ -126,7 +127,7 @@ export default async function SharedBoardsPage() {
                       </div>
                     </div>
                     <span className="orb-badge orb-badge-subtle-pass text-[10px]">
-                      VIEWER
+                      {board.canEdit ? "EDITOR" : "VIEWER"}
                     </span>
                   </div>
 
