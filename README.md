@@ -273,6 +273,8 @@ cp .env.example .env
 | Variable | Description | Local Default | Production Example (Neon) |
 |---|---|---|---|
 | `NODE_ENV` | Environment mode | `development` | `production` |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL for the optional Supabase clients | — | `https://your-project.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Public Supabase key used by browser/server clients | — | Supabase publishable key |
 | `JWT_SECRET` | Secret key for signing session tokens | `your-secret-key` | `crypto.randomBytes(32).toString('hex')` |
 | `DATABASE_URL` | Full PostgreSQL connection URI | *(optional)* | `postgresql://user:pass@ep-name.neon.tech/neondb?sslmode=require` |
 | `DB_HOST` | Database host (if not using `DATABASE_URL`) | `localhost` | — |
@@ -281,6 +283,8 @@ cp .env.example .env
 | `DB_USER` | Database username | `postgres` | — |
 | `DB_PASS` | Database password | `password` | — |
 | `DB_SSL` | Force SSL mode | `false` | `true` |
+
+The Supabase client helpers and session refresh proxy are available for Supabase features. The existing application login and Sequelize/PostgreSQL data layer remain unchanged. Configure the two `NEXT_PUBLIC_SUPABASE_*` variables in `.env.local` for local development and in the deployment environment for production.
 
 ---
 
