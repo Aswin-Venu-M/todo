@@ -98,7 +98,7 @@ export function KanbanColumn({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`orb-card-container flex flex-col border border-[var(--orb-border)] bg-[var(--orb-bg-muted)]/70 p-2.5 sm:p-3 min-h-[520px] transition-all ${
+      className={`orb-card-container flex flex-col border border-[var(--orb-border)] bg-[var(--orb-bg-muted)]/70 p-2.5 sm:p-3 min-h-[300px] sm:min-h-[520px] transition-all ${
         isDragOver ? "kanban-drag-active" : ""
       }`}
     >

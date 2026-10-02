@@ -165,12 +165,9 @@ export function KanbanBoard({
 
   return (
     <div className="space-y-4">
-      {/* BOARD CONTROLS: SEARCH, PRIORITY FILTER & OWNER ACTIONS */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-        {/* Search & Filter */}
-        <div className="flex flex-nowrap items-center gap-2.5 flex-1">
-          {/* Search Box */}
-          <div className="orb-input-wrap orb-input-icon-left min-w-0 max-w-xs flex-1">
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-1 sm:items-center">
+          <div className="orb-input-wrap orb-input-icon-left min-w-0 w-full sm:max-w-xs sm:flex-1">
             <div className="orb-icon-slot-left">
               <Search className="size-3.5 text-[var(--orb-text-muted)]" />
             </div>
@@ -183,10 +180,9 @@ export function KanbanBoard({
             />
           </div>
 
-          {/* Priority Select */}
           <Select value={priorityFilter} onValueChange={setPriorityFilter}>
             <SelectTrigger
-              className="h-9 w-[180px] shrink-0 text-xs font-semibold border-[var(--orb-border)] bg-[var(--orb-bg-surface)] focus:ring-[var(--orb-accent)] cursor-pointer"
+              className="h-9 w-full sm:w-[180px] shrink-0 text-xs font-semibold border-[var(--orb-border)] bg-[var(--orb-bg-surface)] focus:ring-[var(--orb-accent)] cursor-pointer"
               aria-label="Filter by priority"
             >
               <SelectValue placeholder="All Priorities" />
@@ -200,7 +196,6 @@ export function KanbanBoard({
           </Select>
         </div>
 
-        {/* Owner Action Buttons */}
         {canEdit && (
           <div className="flex items-center gap-2 shrink-0">
             {isOwner && (
@@ -229,7 +224,6 @@ export function KanbanBoard({
         )}
       </div>
 
-      {/* KANBAN 3-COLUMN GRID */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
         <KanbanColumn
           status="TODO"
